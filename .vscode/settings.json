@@ -20,4 +20,7 @@
 		"arg5": "",
 		"arg6": "",
 	},
+	"files.associations": {
+		"adtblist.h": "c"
+	},
 }
