@@ -78,8 +78,10 @@ void blist_remove(BList blist, BListNode node) {
 		next_node->prev=prev_node;
 	}
 	if (blist->destroy_value!=NULL)  {
-		(blist->destroy_value)(node);
+		(blist->destroy_value)(node->value);
+	
 	}
+	free(node);
 	blist->size--;
 	return ;
 }
@@ -107,11 +109,12 @@ DestroyFunc blist_set_destroy_value(BList blist, DestroyFunc destroy_value) {
 
 void blist_destroy(BList blist) {
 	BListNode node = blist->dummy;
+	
 	while (node != NULL) {			
 		BListNode next = node->next;		
-		if (node != blist->dummy && blist->destroy_value != NULL)  
+		if (node != blist->dummy && blist->destroy_value != NULL)  { 
 			blist->destroy_value(node->value);
-		
+		}
 		free(node);
 		node = next;
 	}
