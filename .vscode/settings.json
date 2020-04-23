@@ -21,6 +21,7 @@
 		"arg6": "",
 	},
 	"files.associations": {
-		"adtblist.h": "c"
+		"adtblist.h": "c",
+		"adtlist.h": "c"
 	},
 }

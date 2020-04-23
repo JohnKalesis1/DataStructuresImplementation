@@ -42,19 +42,21 @@ int blist_size(BList blist) {
 }
 
 void blist_insert(BList blist, BListNode node, Pointer value) {
-	if (node==NULL)  {
-		BListNode next_node;
-		node=blist->dummy;
-		next_node=node->next;
-		node->next=malloc(sizeof(node));
-		node->next->next=next_node;
-		node->next->value=value;
-		node->next->prev=node;
-		if (blist->size==0)  {
-			blist->last=node->next;
+	if (node==BLIST_EOF)  {
+		BListNode prev_node;
+		prev_node=blist->last;
+		if (blist->size!=0)  {
+			blist->last->next=malloc(sizeof(BListNode*));
+			blist->last->next->value=value;
+			blist->last=blist->last->next;
+			blist->last->prev=prev_node;
+			blist->last->next=NULL;
 		}
 		else  {
-			next_node->prev=node->next;
+			blist->dummy->next=malloc(sizeof(BListNode*));
+			blist->dummy->next->value=value;
+			blist->dummy->next->prev=blist->dummy;
+			blist->last=blist->dummy->next;
 		}
 	}
 	else  {
@@ -131,6 +133,7 @@ BListNode blist_last(BList blist) {
 }
 
 BListNode blist_next(BList blist, BListNode node) {
+	assert(node!=NULL);
 	if (node->next!=NULL)  {
 		return node->next;
 	}  
