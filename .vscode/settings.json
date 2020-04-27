@@ -4,7 +4,7 @@
 		"dir": "tests",
 
 		// Όνομα του εκτελέσιμου προγράμματος
-		"program": "UsingDoublyLL_ADTBList_test",
+		"program": "UsingHeap_ADTPriorityQueue_test",
 
 		// Ορίσματα του προγράμματος.
 		// - Για ανακατεύθυνση εισόδου βάζουμε ορίσματα: "<", "input-file"
@@ -22,6 +22,8 @@
 	},
 	"files.associations": {
 		"adtblist.h": "c",
-		"adtlist.h": "c"
+		"adtlist.h": "c",
+		"adtpriorityqueue.h": "c",
+		"adtvector.h": "c"
 	},
 }

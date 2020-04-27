@@ -102,3 +102,5 @@ Pointer vector_node_value(Vector vec, VectorNode node);
 // Επιστρέφει τον κόμβο του στοιχείου, ή VECTOR_EOF αν δεν βρεθεί.
 
 VectorNode vector_find_node(Vector vec, Pointer value, CompareFunc compare);
+
+int vector_steps(Vector vector);

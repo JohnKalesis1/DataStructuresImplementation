@@ -11,6 +11,7 @@
 
 #include "common_types.h"
 #include "ADTVector.h"
+#include "ADTSet.h"	
 
 
 // Μία ουρά προτεραιότητας αναπαριστάται από τον τύπο PriorityQueue

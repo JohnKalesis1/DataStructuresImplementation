@@ -79,7 +79,6 @@ void blist_remove(BList blist, BListNode node) {
 	}
 	if (blist->destroy_value!=NULL)  {
 		(blist->destroy_value)(node->value);
-	
 	}
 	free(node);
 	blist->size--;

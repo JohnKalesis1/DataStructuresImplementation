@@ -9,6 +9,7 @@
 
 #include "ADTPriorityQueue.h"
 
+
 // θέτει τα στοιχεία του πίνακα array  σε τυχαία σειρά
 void shuffle(int* array[], int size) {
 	for (int i = 0; i < size; i++) {
@@ -40,7 +41,7 @@ void test_create(void) {
 	pqueue_destroy(pqueue);
 
 	// create με αρχικά στοιχεία
-	Vector values = vector_create(0, NULL);			// χωρίς destroy function, το destroy θα το κάνει η ουρά!
+	Vector values = vector_create(0, free);			// χωρίς destroy function, το destroy θα το κάνει η ουρά!
 	vector_insert_last(values, create_int(0));
 	vector_insert_last(values, create_int(1));
 

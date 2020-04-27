@@ -16,6 +16,10 @@ struct priority_queue {
 	CompareFunc compare;		// Η διάταξη
 	DestroyFunc destroy_value;	// Συνάρτηση που καταστρέφει ένα στοιχείο του vector.
 };
+struct priority_queue_node  {
+	Pointer value;
+	int id;
+};
 
 
 // Βοηθητικές συναρτήσεις ////////////////////////////////////////////////////////////////////////////
@@ -39,7 +43,9 @@ static void node_swap(PriorityQueue pqueue, int node_id1, int node_id2) {
 	// τα node_ids είναι 1-based, το node_id αποθηκεύεται στη θέση node_id - 1
 	Pointer value1 = node_value(pqueue, node_id1);
 	Pointer value2 = node_value(pqueue, node_id2);
-
+	int temp=((PriorityQueueNode)value1)->id;
+	((PriorityQueueNode)value1)->id=((PriorityQueueNode)value2)->id;
+	((PriorityQueueNode)value2)->id=temp;
 	vector_set_at(pqueue->vector, node_id1 - 1, value2);
 	vector_set_at(pqueue->vector, node_id2 - 1, value1);
 }
@@ -51,13 +57,12 @@ static void node_swap(PriorityQueue pqueue, int node_id1, int node_id2) {
 
 static void bubble_up(PriorityQueue pqueue, int node_id) {
 	// Αν φτάσαμε στη ρίζα, σταματάμε
-	if (node_id == 1)
+	if (node_id==1)
 		return;
 
-	int parent = node_id / 2;		// Ο πατέρας του κόμβου. Τα node_ids είναι 1-based
-
+	int parent=node_id/2;		// Ο πατέρας του κόμβου. Τα node_ids είναι 1-based
 	// Αν ο πατέρας έχει μικρότερη τιμή από τον κόμβο, swap και συνεχίζουμε αναδρομικά προς τα πάνω
-	if (pqueue->compare(node_value(pqueue, parent), node_value(pqueue, node_id)) < 0) {
+	if ((pqueue->compare)(pqueue_node_value(pqueue,node_value(pqueue, parent)), pqueue_node_value(pqueue,node_value(pqueue, node_id))) < 0) {
 		node_swap(pqueue, parent, node_id);
 		bubble_up(pqueue, parent);
 	}
@@ -79,11 +84,11 @@ static void bubble_down(PriorityQueue pqueue, int node_id) {
 
 	// βρίσκουμε το μέγιστο από τα 2 παιδιά
 	int max_child = left_child;
-	if (right_child <= size && pqueue->compare(node_value(pqueue, left_child), node_value(pqueue, right_child)) < 0)
+	if (right_child <= size && (pqueue->compare)(pqueue_node_value(pqueue,node_value(pqueue, left_child)), pqueue_node_value(pqueue,node_value(pqueue, right_child))) < 0)
 			max_child = right_child;
 
 	// Αν ο κόμβος είναι μικρότερος από το μέγιστο παιδί, swap και συνεχίζουμε προς τα κάτω
-	if (pqueue->compare(node_value(pqueue, node_id), node_value(pqueue, max_child)) < 0) {
+	if ((pqueue->compare)(pqueue_node_value(pqueue,node_value(pqueue, node_id)), pqueue_node_value(pqueue,node_value(pqueue, max_child))) < 0) {
 		node_swap(pqueue, node_id, max_child);
 		bubble_down(pqueue, max_child);
 	}
@@ -126,12 +131,16 @@ int pqueue_size(PriorityQueue pqueue) {
 }
 
 Pointer pqueue_max(PriorityQueue pqueue) {
-	return node_value(pqueue, 1);		// root
+	return pqueue_node_value(pqueue,node_value(pqueue, 1));		// root
 }
 
 PriorityQueueNode pqueue_insert(PriorityQueue pqueue, Pointer value) {
 	// Προσθέτουμε την τιμή στο τέλος το σωρού
-	vector_insert_last(pqueue->vector, value);
+	PriorityQueueNode node;
+	node=malloc(sizeof(PriorityQueueNode*));
+	node->value=value;
+	vector_insert_last(pqueue->vector, node);
+	node->id=vector_size(pqueue->vector);
 
  	// Ολοι οι κόμβοι ικανοποιούν την ιδιότητα του σωρού εκτός από τον τελευταίο, που μπορεί να είναι
 	// μεγαλύτερος από τον πατέρα του. Αρα μπορούμε να επαναφέρουμε την ιδιότητα του σωρού καλώντας
@@ -140,7 +149,7 @@ PriorityQueueNode pqueue_insert(PriorityQueue pqueue, Pointer value) {
 
 	// TODO: υλοποίηση κόμβων και επιστροφή.
 
-	return NULL;
+	return node;
 }
 
 void pqueue_remove_max(PriorityQueue pqueue) {
@@ -149,10 +158,11 @@ void pqueue_remove_max(PriorityQueue pqueue) {
 
 	// Destroy την τιμή που αφαιρείται
 	if (pqueue->destroy_value != NULL)
-		pqueue->destroy_value(pqueue_max(pqueue));
+		(pqueue->destroy_value)(pqueue_max(pqueue));
 
 	// Αντικαθιστούμε τον πρώτο κόμβο με τον τελευταίο και αφαιρούμε τον τελευταίο
 	node_swap(pqueue, 1, last_node);
+	free(node_value(pqueue,pqueue_size(pqueue)));
 	vector_remove_last(pqueue->vector);
 
  	// Ολοι οι κόμβοι ικανοποιούν την ιδιότητα του σωρού εκτός από τη νέα ρίζα
@@ -170,7 +180,20 @@ DestroyFunc pqueue_set_destroy_value(PriorityQueue pqueue, DestroyFunc destroy_v
 void pqueue_destroy(PriorityQueue pqueue) {
 	// Αντί να κάνουμε εμείς destroy τα στοιχεία, είναι απλούστερο να
 	// προσθέσουμε τη destroy_value στο vector ώστε να κληθεί κατά το vector_destroy.
-	vector_set_destroy_value(pqueue->vector, pqueue->destroy_value);
+	//vector_set_destroy_value(pqueue->vector, pqueue->destroy_value);
+	PriorityQueueNode node;
+	if (pqueue_size(pqueue)!=0)  {
+		int i=0;
+		while(i!=pqueue_size(pqueue))  {
+			node=node_value(pqueue,pqueue_size(pqueue)-i);
+			if (pqueue->destroy_value!=NULL)  {
+ 				(pqueue->destroy_value)(node->value);
+			}
+			free(node);
+			node=node_value(pqueue,pqueue_size(pqueue)-i);
+			i++;
+		}
+	}
 	vector_destroy(pqueue->vector);
 
 	free(pqueue);
@@ -181,13 +204,40 @@ void pqueue_destroy(PriorityQueue pqueue) {
 //// Νέες συναρτήσεις για την εργασία 2 //////////////////////////////////////////
 
 Pointer pqueue_node_value(PriorityQueue set, PriorityQueueNode node) {
-	return NULL;
+	return node->value;
 }
 
 void pqueue_remove_node(PriorityQueue pqueue, PriorityQueueNode node) {
-
+	PriorityQueueNode last_node=node_value(pqueue,pqueue_size(pqueue));
+	//vector_set_destroy_value(pqueue->vector, pqueue->destroy_value);
+	if (pqueue->destroy_value != NULL)  {
+		pqueue->destroy_value(pqueue_node_value(pqueue,node));
+	}
+	node_swap(pqueue,node->id,last_node->id);
+	free(node);
+	vector_remove_last(pqueue->vector);
+	bubble_down(pqueue,last_node->id);
+	
 }
 
 void pqueue_update_order(PriorityQueue pqueue, PriorityQueueNode node) {
-
+	
+	int parent_id=node->id/2;
+	int left_child=2*node->id;
+	int right_child=2*node->id+1;
+	if (node->id!=1)  {
+		if (node->value>pqueue_node_value(pqueue,node_value(pqueue,parent_id)))  {
+			bubble_up(pqueue,node->id);
+		}
+	}
+	if (left_child<=pqueue_size(pqueue)) {
+		if (node->value<pqueue_node_value(pqueue,node_value(pqueue,left_child)))  {
+			bubble_down(pqueue,node->id);
+		}
+		if (right_child<=pqueue_size(pqueue))  {
+			if (node->value<pqueue_node_value(pqueue,node_value(pqueue,right_child)))  {
+				bubble_down(pqueue,node->id);
+			}
+		}
+	}
 }
