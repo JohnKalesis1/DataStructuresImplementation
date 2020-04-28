@@ -80,7 +80,7 @@ void test_remove_max(void) {
 	int N = 10;
 	int* array[N];
 	for (int i = 0; i < N; i++)
-		array[i] = create_int(i);
+		array[i] =create_int(i);
 	shuffle(array, N);
 
 	for (int i = 0; i < N; i++)

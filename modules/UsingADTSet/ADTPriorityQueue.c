@@ -14,29 +14,43 @@
 
 struct priority_queue {
 	Set set;	
-    DestroyFunc destroy;			
+    DestroyFunc destroy;	
+    CompareFunc compare;		
 };
 struct priority_queue_node   {
     Pointer value;
+    PriorityQueue pqueue;
 };
 
 
 
 
 // Συναρτήσεις του ADTPriorityQueue //////////////////////////////////////////////////
-int compare_nodes(PriorityQueue pqueue,CompareFunc compare,Pointer a,Pointer b)  {
-    return compare(((PriorityQueueNode)a)->value,((PriorityQueueNode)b)->value);
+int compare_nodes(Pointer a,Pointer b)  {
+        PriorityQueueNode node1= (PriorityQueueNode) a;
+        PriorityQueueNode node2=  (PriorityQueueNode) b;
+        return (node2->pqueue->compare)(node1->value,node2->value);
+};
+void destroy_nodes(Pointer a)  {
+    PriorityQueueNode node=(PriorityQueueNode) a;
+    if (node->pqueue->destroy!=NULL)  {
+        (node->pqueue->destroy)(node->value);
+    }
+    free(node);
+    
 }
 PriorityQueue pqueue_create(CompareFunc compare, DestroyFunc destroy_value, Vector values) {
 	PriorityQueue pqueue;
     PriorityQueueNode node;
     pqueue=malloc(sizeof(PriorityQueue*));
-    pqueue->set=set_create(compare_nodes(pqueue,compare,),destroy_value);
+    pqueue->compare=compare;
+    pqueue->set=set_create(compare_nodes,destroy_nodes);
     pqueue->destroy=destroy_value;
     if (values!=NULL)  {
         for (int i=0;i<vector_size(values);i++)  {
             node=malloc(sizeof(PriorityQueueNode*));
             node->value=vector_get_at(values,i);
+            node->pqueue=pqueue;
             set_insert(pqueue->set,node);
         }
     }
@@ -55,16 +69,13 @@ PriorityQueueNode pqueue_insert(PriorityQueue pqueue, Pointer value) {
     PriorityQueueNode node;
     node=malloc(sizeof(PriorityQueueNode*));
     node->value=value;
+    node->pqueue=pqueue;
     set_insert(pqueue->set,node);
 	return node;
 }
 
 void pqueue_remove_max(PriorityQueue pqueue) {
-	if (pqueue->destroy!=NULL)  {
-        (pqueue->destroy)(((PriorityQueueNode) set_node_value(pqueue->set,set_last(pqueue->set)))->value);
-    }
-    free(set_node_value(pqueue->set,set_last(pqueue->set)));
-    set_remove(pqueue->set,set_last(pqueue->set));
+    set_remove(pqueue->set,set_node_value(pqueue->set,set_last(pqueue->set)));
 }
 
 DestroyFunc pqueue_set_destroy_value(PriorityQueue pqueue, DestroyFunc destroy_value) {
@@ -72,16 +83,6 @@ DestroyFunc pqueue_set_destroy_value(PriorityQueue pqueue, DestroyFunc destroy_v
 }
 
 void pqueue_destroy(PriorityQueue pqueue) {
-	SetNode old,snode=set_first(pqueue->set);
-    while (snode!=SET_EOF)  {
-        if (pqueue->destroy!=NULL)  {
-            (pqueue->destroy)(((PriorityQueueNode) set_node_value(pqueue->set,snode))->value);
-        }
-        free(set_node_value(pqueue->set,snode));
-        old=snode;
-        set_remove(pqueue->set,snode);
-        snode=set_next(pqueue->set,old);
-    }
     set_destroy(pqueue->set);
 	free(pqueue);
 }
@@ -91,16 +92,11 @@ void pqueue_destroy(PriorityQueue pqueue) {
 //// Νέες συναρτήσεις για την εργασία 2 //////////////////////////////////////////
 
 Pointer pqueue_node_value(PriorityQueue pqueue, PriorityQueueNode node) {
-    return ((PriorityQueueNode) set_node_value(pqueue->set,set_find_node(pqueue->set,node)))->value;
+    return node->value;
 }
 
 void pqueue_remove_node(PriorityQueue pqueue, PriorityQueueNode node) {
-    SetNode snode=set_find_node(pqueue->set,pqueue_node_value(pqueue,node));
-    if (pqueue->destroy!=NULL)  {
-        (pqueue->destroy)(pqueue_node_value(pqueue,node));
-    }
-    free(node);
-    set_remove(pqueue->set,snode);
+    set_remove(pqueue->set,node);
     return ;
 }
 
