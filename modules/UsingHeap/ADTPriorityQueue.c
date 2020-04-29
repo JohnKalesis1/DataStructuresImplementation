@@ -209,7 +209,6 @@ Pointer pqueue_node_value(PriorityQueue set, PriorityQueueNode node) {
 
 void pqueue_remove_node(PriorityQueue pqueue, PriorityQueueNode node) {
 	PriorityQueueNode last_node=node_value(pqueue,pqueue_size(pqueue));
-	//vector_set_destroy_value(pqueue->vector, pqueue->destroy_value);
 	if (pqueue->destroy_value != NULL)  {
 		pqueue->destroy_value(pqueue_node_value(pqueue,node));
 	}
@@ -226,16 +225,16 @@ void pqueue_update_order(PriorityQueue pqueue, PriorityQueueNode node) {
 	int left_child=2*node->id;
 	int right_child=2*node->id+1;
 	if (node->id!=1)  {
-		if (node->value>pqueue_node_value(pqueue,node_value(pqueue,parent_id)))  {
+		if ((pqueue->compare)(node->value,pqueue_node_value(pqueue,node_value(pqueue,parent_id)))>0)  {
 			bubble_up(pqueue,node->id);
 		}
 	}
-	if (left_child<=pqueue_size(pqueue)) {
-		if (node->value<pqueue_node_value(pqueue,node_value(pqueue,left_child)))  {
+	else if (left_child<=pqueue_size(pqueue)) {
+		if ((pqueue->compare)(node->value,pqueue_node_value(pqueue,node_value(pqueue,left_child)))<0)  {
 			bubble_down(pqueue,node->id);
 		}
-		if (right_child<=pqueue_size(pqueue))  {
-			if (node->value<pqueue_node_value(pqueue,node_value(pqueue,right_child)))  {
+		else if (right_child<=pqueue_size(pqueue))  {
+			if ((pqueue->compare)(node->value,pqueue_node_value(pqueue,node_value(pqueue,right_child)))<0)  {
 				bubble_down(pqueue,node->id);
 			}
 		}

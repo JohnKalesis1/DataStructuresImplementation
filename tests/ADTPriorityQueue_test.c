@@ -154,9 +154,7 @@ void test_update_order(void) {
 	// Το max αλλάζει κάθε φορά
 	for (int i = N-1; i > 0; i--) {
 		*(int*)pqueue_node_value(pqueue, nodes[i]) *= -1;	// Αλλαγή του περιεχομένου του value
-		pqueue_update_order(pqueue, nodes[i]);
-
-		// Ελεγχος ότι το max άλλαξε (αλλά το μέγεθος όχι)
+		pqueue_update_order(pqueue, nodes[i]);		// Ελεγχος ότι το max άλλαξε (αλλά το μέγεθος όχι)
 		TEST_ASSERT(*(int*)pqueue_max(pqueue) == i-1);
 		TEST_ASSERT(pqueue_size(pqueue) == N);
 	}
