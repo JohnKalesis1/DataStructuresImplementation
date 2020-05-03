@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "ADTSet.h"
+#include "ADTBList.h"
 
 
 // Υλοποιούμε τον ADT Set μέσω BST, οπότε το struct set είναι ένα Δυαδικό Δέντρο Αναζήτησης.
