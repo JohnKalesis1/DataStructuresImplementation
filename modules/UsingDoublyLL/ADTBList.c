@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "ADTBList.h"
+#include <stdio.h>
 
 
 // Ενα BList είναι pointer σε αυτό το struct
@@ -60,7 +61,8 @@ void blist_insert(BList blist, BListNode node, Pointer value) {
 		}
 	}
 	else  {
-		BListNode prev_node=node->prev;
+		BListNode prev_node;
+		prev_node=node->prev;
 		node->prev=malloc(sizeof(node));
 		node->prev->prev=prev_node;
 		prev_node->next=node->prev;

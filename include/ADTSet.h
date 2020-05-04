@@ -11,6 +11,7 @@
 #pragma once // #include το πολύ μία φορά
 
 #include "common_types.h"
+#include "ADTBList.h"
 
 
 // Ενα σύνολο αναπαριστάται από τον τύπο Set
