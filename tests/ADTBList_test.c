@@ -37,6 +37,7 @@ void test_insert(void) {
 
 	for (int i = 0; i < N; i++) {
 		// LIST_EOF για εισαγωγή στην στο τελος
+		array[i]=i+3;
 		blist_insert(blist, BLIST_EOF, create_int(array[i]));
 		
 		// Ελέγχουμε εάν ενημερώθηκε (αυξήθηκε) το μέγεθος της λίστας.
@@ -134,8 +135,16 @@ void test_find() {
 	blist_set_destroy_value(blist, free);
 
 	blist_destroy(blist);
+	
+	blist = blist_create(free);
+	for (int i = 0; i < N; i++) {
+		array[i] = i;
+		blist_insert(blist, BLIST_EOF, create_int(array[i]));
+	}
+	blist_remove(blist,blist_last(blist));
+	TEST_ASSERT(*(int*)blist_node_value(blist,blist_last(blist))==N-2);
+	blist_destroy(blist);
 }
-
 
 void test_find_node() {
 	BList blist = blist_create(NULL);

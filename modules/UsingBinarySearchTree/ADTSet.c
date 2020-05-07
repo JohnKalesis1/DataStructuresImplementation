@@ -269,6 +269,7 @@ static void node_destroy(SetNode node, DestroyFunc destroy_value) {
 	if (destroy_value != NULL)
 		destroy_value(node->value);
 
+	blist_remove(node->set->list,node->bnode);
 	free(node);
 }
 
@@ -335,6 +336,7 @@ DestroyFunc set_set_destroy_value(Set vec, DestroyFunc destroy_value) {
 
 void set_destroy(Set set) {
 	node_destroy(set->root, set->destroy_value);
+	blist_destroy(set->list);
 	free(set);
 }
 

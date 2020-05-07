@@ -4,7 +4,7 @@
 		"dir": "tests",
 
 		// Όνομα του εκτελέσιμου προγράμματος
-		"program": "UsingDoublyLL_ADTBList_test",
+		"program": "UsingBinarySearchTree_ADTSet_test",
 
 		// Ορίσματα του προγράμματος.
 		// - Για ανακατεύθυνση εισόδου βάζουμε ορίσματα: "<", "input-file"

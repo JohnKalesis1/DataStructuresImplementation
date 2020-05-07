@@ -30,7 +30,7 @@ BList blist_create(DestroyFunc destroy_value) {
 	BList blist;
 	blist=malloc(sizeof(*blist));
 	blist->size=0;
-	blist->dummy=malloc(sizeof(*blist->dummy));
+	blist->dummy=malloc(sizeof(*(blist->dummy)));
 	blist->dummy->next=NULL;
 	blist->dummy->prev=NULL;
 	blist->last=blist->dummy;
@@ -47,23 +47,24 @@ void blist_insert(BList blist, BListNode node, Pointer value) {
 		BListNode prev_node;
 		prev_node=blist->last;
 		if (blist->size!=0)  {
-			blist->last->next=malloc(sizeof(BListNode*));
+			blist->last->next=malloc(sizeof(*prev_node));
 			blist->last->next->value=value;
 			blist->last=blist->last->next;
 			blist->last->prev=prev_node;
 			blist->last->next=NULL;
 		}
 		else  {
-			blist->dummy->next=malloc(sizeof(BListNode*));
+			blist->dummy->next=malloc(sizeof(*prev_node));
 			blist->dummy->next->value=value;
 			blist->dummy->next->prev=blist->dummy;
 			blist->last=blist->dummy->next;
+			blist->dummy->next->next=NULL;
 		}
 	}
 	else  {
 		BListNode prev_node;
 		prev_node=node->prev;
-		node->prev=malloc(sizeof(node));
+		node->prev=malloc(sizeof(*node));
 		node->prev->prev=prev_node;
 		prev_node->next=node->prev;
 		node->prev->value=value;
@@ -79,7 +80,10 @@ void blist_remove(BList blist, BListNode node) {
 	if (next_node!=NULL)  {
 		next_node->prev=prev_node;
 	}
-	if (blist->destroy_value!=NULL)  {
+	if (blist->last==node)  {
+		blist->last=prev_node;
+	}
+ 	if (blist->destroy_value!=NULL)  {
 		(blist->destroy_value)(node->value);
 	}
 	free(node);
