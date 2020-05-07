@@ -42,13 +42,13 @@ void destroy_nodes(Pointer a)  {
 PriorityQueue pqueue_create(CompareFunc compare, DestroyFunc destroy_value, Vector values) {
 	PriorityQueue pqueue;
     PriorityQueueNode node;
-    pqueue=malloc(sizeof(PriorityQueue*));
+    pqueue=malloc(sizeof(*pqueue));
     pqueue->compare=compare;
     pqueue->set=set_create(compare_nodes,destroy_nodes);
     pqueue->destroy=destroy_value;
     if (values!=NULL)  {
         for (int i=0;i<vector_size(values);i++)  {
-            node=malloc(sizeof(PriorityQueueNode*));
+            node=malloc(sizeof(*node));
             node->value=vector_get_at(values,i);
             node->pqueue=pqueue;
             set_insert(pqueue->set,node);
@@ -67,7 +67,7 @@ Pointer pqueue_max(PriorityQueue pqueue) {
 
 PriorityQueueNode pqueue_insert(PriorityQueue pqueue, Pointer value) {
     PriorityQueueNode node;
-    node=malloc(sizeof(PriorityQueueNode*));
+    node=malloc(sizeof(*node));
     node->value=value;
     node->pqueue=pqueue;
     set_insert(pqueue->set,node);

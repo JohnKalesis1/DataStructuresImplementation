@@ -45,7 +45,7 @@ void test_create(void) {
 	vector_insert_last(values, create_int(0));
 	vector_insert_last(values, create_int(1));
 
-	pqueue = pqueue_create(compare_ints, free, values);
+	pqueue = pqueue_create(compare_ints, NULL, values);
 	TEST_ASSERT(pqueue != NULL);
 	TEST_ASSERT(pqueue_size(pqueue) == 2);
 

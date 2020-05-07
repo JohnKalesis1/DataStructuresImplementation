@@ -137,7 +137,7 @@ Pointer pqueue_max(PriorityQueue pqueue) {
 PriorityQueueNode pqueue_insert(PriorityQueue pqueue, Pointer value) {
 	// Προσθέτουμε την τιμή στο τέλος το σωρού
 	PriorityQueueNode node;
-	node=malloc(sizeof(PriorityQueueNode*));
+	node=malloc(sizeof(*node));
 	node->value=value;
 	vector_insert_last(pqueue->vector, node);
 	node->id=vector_size(pqueue->vector);
@@ -215,7 +215,9 @@ void pqueue_remove_node(PriorityQueue pqueue, PriorityQueueNode node) {
 	node_swap(pqueue,node->id,last_node->id);
 	free(node);
 	vector_remove_last(pqueue->vector);
-	bubble_down(pqueue,last_node->id);
+	if (pqueue_size(pqueue)!=0)  {
+		bubble_down(pqueue,last_node->id);
+	}
 	
 }
 
