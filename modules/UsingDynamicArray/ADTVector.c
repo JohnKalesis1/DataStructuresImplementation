@@ -70,12 +70,14 @@ void vector_set_at(Vector vec, int pos, Pointer value) {
 void vector_insert_last(Vector vec, Pointer value) {
 	// Μεγαλώνουμε τον πίνακα (αν χρειαστεί), ώστε να χωράει τουλάχιστον size στοιχεία
 	// Διπλασιάζουμε κάθε φορά το capacity (σημαντικό για την πολυπλοκότητα!)
-	vec->steps=1;
 	if (vec->capacity == vec->size) {
 		// Προσοχή: δεν πρέπει να κάνουμε free τον παλιό pointer, το κάνει η realloc
 		vec->capacity *= 2;
 		vec->array = realloc(vec->array, vec->capacity * sizeof(*vec->array));
 		vec->steps=vec->size;
+	}
+	else  {
+		vec->steps=1;
 	}
 
 	// Μεγαλώνουμε τον πίνακα και προσθέτουμε το στοιχείο
@@ -107,10 +109,11 @@ void vector_remove_last(Vector vec) {
 
 Pointer vector_find(Vector vec, Pointer value, CompareFunc compare) {
 	// Διάσχιση του vector
-	for (int i = 0; i < vec->size; i++)
+	for (int i = 0; i < vec->size; i++)  {
+		vec->steps=i;
 		if (compare(vec->array[i].value, value) == 0)
 			return vec->array[i].value;		// βρέθηκε
-	vec->steps=1;
+	}
 	return NULL;				// δεν υπάρχει
 }
 
@@ -174,13 +177,13 @@ Pointer vector_node_value(Vector vec, VectorNode node) {
 
 VectorNode vector_find_node(Vector vec, Pointer value, CompareFunc compare) {
 	// Διάσχιση του vector
-	vec->steps=vec->size;
-	for (int i = 0; i < vec->size; i++)
+	for (int i = 0; i < vec->size; i++)  {
+		vec->steps=i;
 		if (compare(vec->array[i].value, value) == 0)
 			return &vec->array[i];		// βρέθηκε
-
+	}
 	return VECTOR_EOF;				// δεν υπάρχει
 }
 int vector_steps(Vector vec)  {
-	return vec->size;  
+	return vec->steps;  
 }
