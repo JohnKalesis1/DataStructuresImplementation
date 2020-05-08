@@ -143,7 +143,6 @@ static SetNode node_insert(SetNode node, CompareFunc compare, Pointer value, boo
 		snode->set=set;
 		if (*parent!=NULL)  {
 			if (snode->set->compare((*parent)->value,snode->value)<0)  {
-				//*parent=node_find_min(*parent);
 				blist_insert(snode->set->list,blist_next(snode->set->list,(*parent)->bnode),snode);
 				snode->bnode=blist_next(snode->set->list,(*parent)->bnode);
 			}
